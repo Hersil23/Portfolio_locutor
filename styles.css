@@ -249,6 +249,46 @@ body {
         position: relative;
         z-index: 10;
     }
+    
+    /* Fix para barras de habilidades en móvil */
+    .about-skills {
+        padding: 0 !important;
+        margin: 0 !important;
+    }
+    
+    .skill-item {
+        margin-bottom: 1.5rem;
+        padding: 0 !important;
+    }
+    
+    .skill-bar {
+        max-width: 100% !important;
+        overflow: hidden;
+    }
+    
+    /* Asegurar que el glass-effect tenga padding suficiente en móvil */
+    #quien-soy .glass-effect {
+        padding: 1.5rem !important;
+        margin: 0 1rem;
+    }
+    
+    /* Grid responsivo para about section */
+    #quien-soy .grid {
+        grid-template-columns: 1fr !important;
+        gap: 2rem;
+    }
+    
+    /* Stats en móvil */
+    #quien-soy .flex {
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 1rem;
+    }
+    
+    #quien-soy .text-center {
+        flex: 1;
+        min-width: 80px;
+    }
 }
 
 /* Corrección para secciones que no se muestran */
@@ -360,6 +400,75 @@ textarea:focus {
 /* Resetear cualquier transform o positioning problemático */
 * {
     box-sizing: border-box;
+}
+
+/* Fix específico para barras de habilidades que se salen en móvil */
+.skill-item {
+    width: 100%;
+    overflow: hidden;
+    position: relative;
+}
+
+.skill-bar {
+    max-width: 100% !important;
+    width: 0%;
+    transition: width 1.5s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+/* Container de habilidades */
+.about-skills {
+    width: 100%;
+    overflow: hidden;
+}
+
+/* Fixes específicos para móvil - barras de progreso */
+@media (max-width: 768px) {
+    .glass-effect {
+        padding: 1rem !important;
+        overflow: hidden;
+    }
+    
+    .about-skills .space-y-4 > * + * {
+        margin-top: 1rem;
+    }
+    
+    .skill-item .w-full {
+        width: 100% !important;
+        max-width: 100% !important;
+    }
+    
+    .skill-item .bg-gray-700 {
+        width: 100% !important;
+        overflow: hidden;
+        border-radius: 9999px;
+    }
+    
+    /* Asegurar que las barras no excedan su contenedor */
+    .skill-bar[style*="95%"] {
+        max-width: 95% !important;
+    }
+    
+    .skill-bar[style*="90%"] {
+        max-width: 90% !important;
+    }
+    
+    .skill-bar[style*="88%"] {
+        max-width: 88% !important;
+    }
+    
+    /* Grid de about section en móvil */
+    #quien-soy .md\\:grid-cols-2 {
+        grid-template-columns: 1fr !important;
+    }
+    
+    /* Stats flex en móvil */
+    #quien-soy .flex.space-x-4 {
+        flex-wrap: wrap;
+        gap: 1rem;
+        justify-content: space-around;
+    }
 }
 
 /* Asegurar que el body no tenga overflow issues */
