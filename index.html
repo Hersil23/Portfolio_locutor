@@ -19,17 +19,17 @@
         <div class="container mx-auto px-4 py-4 flex justify-between items-center">
             <div class="flex items-center space-x-3">
                 <div class="w-12 h-12 bg-gradient-to-r from-blue-500 to-blue-600 rounded-full flex items-center justify-center shadow-lg">
-                    <img src="./resourses/logo nav hersil.png" alt="" class="w-8 h-8 object-contain">
+                    <img src="./resources/logo nav hersil.png" alt="" class="w-8 h-8 object-contain">
                 </div>
                 <span class="orbitron text-xl font-bold gradient-text">HERASI</span>
             </div>
             
-            <!-- Menú hamburguesa - Siempre visible en móvil -->
-            <div class="menu-toggle md:hidden" id="mobile-menu">
-                <span></span>
-                <span></span>
-                <span></span>
-            </div>
+            <!-- Botón hamburguesa mejorado -->
+            <button id="mobile-menu-toggle" class="md:hidden z-50 relative w-8 h-8 flex flex-col justify-center items-center space-y-1 focus:outline-none">
+                <span class="hamburger-line w-6 h-0.5 bg-white transition-all duration-300"></span>
+                <span class="hamburger-line w-6 h-0.5 bg-white transition-all duration-300"></span>
+                <span class="hamburger-line w-6 h-0.5 bg-white transition-all duration-300"></span>
+            </button>
             
             <!-- Menú desktop -->
             <ul class="nav-menu hidden md:flex space-x-8" id="nav-menu">
@@ -40,12 +40,23 @@
                 <li><a href="#contacto" class="nav-link hover:text-blue-400 transition-colors duration-300 font-medium">Contacto</a></li>
             </ul>
         </div>
+        
+        <!-- Menú móvil mejorado -->
+        <div id="mobile-nav" class="md:hidden hidden fixed inset-0 bg-black bg-opacity-95 backdrop-blur-lg flex flex-col justify-center items-center space-y-8 z-40">
+            <ul class="text-center space-y-6">
+                <li><a href="#inicio" class="nav-link text-2xl text-white hover:text-blue-400 transition-colors duration-300">Inicio</a></li>
+                <li><a href="#quien-soy" class="nav-link text-2xl text-white hover:text-blue-400 transition-colors duration-300">Quién Soy</a></li>
+                <li><a href="#portafolio" class="nav-link text-2xl text-white hover:text-blue-400 transition-colors duration-300">Portafolio</a></li>
+                <li><a href="#servicios" class="nav-link text-2xl text-white hover:text-blue-400 transition-colors duration-300">Servicios</a></li>
+                <li><a href="#contacto" class="nav-link text-2xl text-white hover:text-blue-400 transition-colors duration-300">Contacto</a></li>
+            </ul>
+        </div>
     </nav>
 
-    <!-- Hero Section -->
-    <section id="inicio" class="min-h-screen flex items-center justify-center px-4 relative">
+    <!-- Hero Section con mejor espaciado móvil -->
+    <section id="inicio" class="min-h-screen flex items-center justify-center px-4 relative pt-20">
         <div class="container mx-auto grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-12 items-center">
-            <div class="hero-text space-y-6 text-center md:text-left">
+            <div class="hero-text space-y-6 text-center md:text-left order-2 md:order-1">
                 <h1 class="text-3xl sm:text-4xl md:text-5xl lg:text-7xl font-bold orbitron leading-tight">
                     Soy <span class="gradient-text typing-animation block sm:inline">Herasi Silva</span>
                 </h1>
@@ -58,7 +69,7 @@
                     Contáctame Ahora
                 </button>
             </div>
-            <div class="hero-image relative order-first md:order-last">
+            <div class="hero-image relative order-1 md:order-2 mt-16 md:mt-0">
                 <div class="relative w-64 h-64 sm:w-80 sm:h-80 mx-auto">
                     <!-- Círculo exterior animado -->
                     <div class="absolute inset-0 bg-gradient-to-r from-blue-500 via-blue-600 to-gray-700 rounded-full animate-spin-slow"></div>

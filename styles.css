@@ -37,6 +37,23 @@ body {
     50% { background-position: 100% 50%; }
 }
 
+/* Hamburger Menu Animation */
+#mobile-menu-toggle {
+    transition: all 0.3s ease;
+}
+
+#mobile-menu-toggle.open .hamburger-line:nth-child(1) {
+    transform: rotate(45deg) translate(5px, 5px);
+}
+
+#mobile-menu-toggle.open .hamburger-line:nth-child(2) {
+    opacity: 0;
+}
+
+#mobile-menu-toggle.open .hamburger-line:nth-child(3) {
+    transform: rotate(-45deg) translate(7px, -6px);
+}
+
 /* Glass Effect */
 .glass-effect {
     background: var(--glass-bg);
@@ -56,18 +73,101 @@ body {
     transform: translateY(-5px);
 }
 
-/* Particles */
+/* Particles Mejoradas */
 .particle {
     position: absolute;
+    border-radius: 50%;
+    pointer-events: none;
+    filter: blur(0.5px);
+    z-index: 1;
+}
+
+/* Partículas tipo 1 - Pequeñas azules */
+.particle.type1 {
     width: 2px;
     height: 2px;
     background: var(--accent-blue);
-    border-radius: 50%;
-    pointer-events: none;
     opacity: 0.6;
+    animation: float1 4s ease-in-out infinite;
 }
 
-/* Animations */
+/* Partículas tipo 2 - Medianas */
+.particle.type2 {
+    width: 4px;
+    height: 4px;
+    background: radial-gradient(circle, var(--accent-blue-light), transparent);
+    opacity: 0.4;
+    animation: float2 6s ease-in-out infinite;
+}
+
+/* Partículas tipo 3 - Grandes con glow */
+.particle.type3 {
+    width: 6px;
+    height: 6px;
+    background: var(--accent-blue);
+    opacity: 0.3;
+    box-shadow: 0 0 10px var(--accent-blue);
+    animation: float3 8s ease-in-out infinite;
+}
+
+@keyframes float1 {
+    0%, 100% { 
+        transform: translateY(0px) translateX(0px) scale(1);
+        opacity: 0.6;
+    }
+    25% { 
+        transform: translateY(-20px) translateX(10px) scale(1.2);
+        opacity: 0.8;
+    }
+    50% { 
+        transform: translateY(-10px) translateX(-15px) scale(0.8);
+        opacity: 0.4;
+    }
+    75% { 
+        transform: translateY(-30px) translateX(5px) scale(1.1);
+        opacity: 0.7;
+    }
+}
+
+@keyframes float2 {
+    0%, 100% { 
+        transform: translateY(0px) translateX(0px) rotate(0deg);
+        opacity: 0.4;
+    }
+    33% { 
+        transform: translateY(-25px) translateX(20px) rotate(120deg);
+        opacity: 0.6;
+    }
+    66% { 
+        transform: translateY(-15px) translateX(-10px) rotate(240deg);
+        opacity: 0.3;
+    }
+}
+
+@keyframes float3 {
+    0%, 100% { 
+        transform: translateY(0px) translateX(0px) scale(1);
+        opacity: 0.3;
+    }
+    20% { 
+        transform: translateY(-15px) translateX(8px) scale(1.3);
+        opacity: 0.5;
+    }
+    40% { 
+        transform: translateY(-30px) translateX(-12px) scale(0.7);
+        opacity: 0.2;
+    }
+    60% { 
+        transform: translateY(-20px) translateX(15px) scale(1.1);
+        opacity: 0.4;
+    }
+    80% { 
+        transform: translateY(-35px) translateX(-5px) scale(0.9);
+        opacity: 0.6;
+    }
+}
+
+/* Animaciones */
 .floating-icon {
     animation: float 3s ease-in-out infinite;
 }
@@ -89,3 +189,321 @@ body {
     left: 50%;
     width: 0;
     height: 0;
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 50%;
+    transform: translate(-50%, -50%);
+    transition: width 0.6s, height 0.6s;
+}
+
+.pulse-button:hover::before {
+    width: 300px;
+    height: 300px;
+}
+
+/* Animación de rotación lenta */
+@keyframes spin-slow {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+
+.animate-spin-slow {
+    animation: spin-slow 8s linear infinite;
+}
+
+/* Responsive para partículas */
+@media (max-width: 768px) {
+    .particle {
+        filter: blur(1px);
+    }
+    
+    .particle.type1 {
+        width: 1.5px;
+        height: 1.5px;
+    }
+    
+    .particle.type2 {
+        width: 3px;
+        height: 3px;
+    }
+    
+    .particle.type3 {
+        width: 4px;
+        height: 4px;
+        box-shadow: 0 0 6px var(--accent-blue);
+    }
+}
+
+/* Mejoras para móvil - Hero Section */
+@media (max-width: 768px) {
+    #inicio {
+        padding-top: 100px;
+        min-height: 100vh;
+    }
+    
+    .hero-image {
+        margin-top: 0 !important;
+        padding-top: 20px;
+    }
+    
+    .hero-image .relative {
+        position: relative;
+        z-index: 10;
+    }
+}
+
+/* Corrección para secciones que no se muestran */
+section {
+    position: relative;
+    z-index: 5;
+    width: 100%;
+    overflow: visible;
+}
+
+/* Asegurar que las partículas no interfieran */
+#particles-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 1;
+    pointer-events: none;
+}
+
+/* Corregir z-index del navbar */
+#navbar {
+    z-index: 1000 !important;
+}
+
+#mobile-nav {
+    z-index: 999 !important;
+}
+
+/* Asegurar visibilidad de todas las secciones */
+#portafolio,
+#servicios,
+#contacto,
+footer {
+    position: relative;
+    z-index: 10;
+    background: transparent;
+}
+
+/* Corregir glassmorphism que puede causar problemas */
+.glass-effect {
+    background: rgba(255, 255, 255, 0.05) !important;
+    backdrop-filter: blur(15px);
+    -webkit-backdrop-filter: blur(15px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+}
+
+/* Mejoras para la navegación móvil */
+#mobile-nav {
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+}
+
+#mobile-nav a {
+    transition: all 0.3s ease;
+    padding: 10px 20px;
+    border-radius: 10px;
+}
+
+#mobile-nav a:hover {
+    background: rgba(59, 130, 246, 0.1);
+    transform: scale(1.05);
+}
+
+/* Estilos para pantallas muy pequeñas */
+@media (max-width: 480px) {
+    #inicio {
+        padding-top: 120px;
+    }
+    
+    .hero-text h1 {
+        font-size: 2.5rem !important;
+        line-height: 1.2;
+    }
+    
+    .hero-text p {
+        font-size: 1rem !important;
+        line-height: 1.5;
+    }
+    
+    .hero-image .relative {
+        width: 200px !important;
+        height: 200px !important;
+    }
+}
+
+/* Mejoras para la accesibilidad */
+.nav-link:focus,
+.pulse-button:focus,
+input:focus,
+textarea:focus {
+    outline: 2px solid var(--accent-blue);
+    outline-offset: 2px;
+}
+
+/* Mejoras para el contraste */
+.text-gray-300 {
+    color: #d1d5db;
+}
+
+.text-gray-400 {
+    color: #9ca3af;
+}
+
+/* FIXES CRÍTICOS PARA VISIBILIDAD DE SECCIONES */
+
+/* Resetear cualquier transform o positioning problemático */
+* {
+    box-sizing: border-box;
+}
+
+/* Asegurar que el body no tenga overflow issues */
+body {
+    position: relative;
+    overflow-x: hidden;
+    overflow-y: auto;
+}
+
+/* Contenedor principal para todas las secciones */
+main {
+    position: relative;
+    z-index: 5;
+    width: 100%;
+}
+
+/* Forzar visibilidad de secciones críticas */
+#portafolio,
+#servicios,
+#contacto,
+footer {
+    position: relative !important;
+    z-index: 10 !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+    display: block !important;
+    width: 100% !important;
+    min-height: auto !important;
+    transform: none !important;
+}
+
+/* Asegurar que las partículas no interfieran */
+#particles-container {
+    position: fixed !important;
+    top: 0 !important;
+    left: 0 !important;
+    width: 100vw !important;
+    height: 100vh !important;
+    z-index: 1 !important;
+    pointer-events: none !important;
+    overflow: hidden !important;
+}
+
+/* Containers de secciones */
+.container {
+    position: relative;
+    z-index: 15;
+}
+
+/* Grid fixes */
+.grid {
+    display: grid !important;
+    gap: 2rem;
+}
+
+/* Cards específicas */
+.portfolio-item,
+.service-card {
+    position: relative;
+    z-index: 20;
+    opacity: 1;
+    visibility: visible;
+    transform: none;
+}
+
+/* Footer específico */
+footer {
+    clear: both;
+    position: relative;
+    z-index: 25 !important;
+    margin-top: 0;
+    padding-top: 3rem;
+    background: rgba(17, 24, 39, 0.5) !important;
+}
+
+/* Social links */
+.social-link {
+    position: relative;
+    z-index: 30;
+    opacity: 1 !important;
+    visibility: visible !important;
+    transform: none !important;
+}
+
+/* ScrollTrigger fixes */
+.gsap-marker {
+    display: none !important;
+}
+
+/* Responsive fixes */
+@media (max-width: 768px) {
+    section {
+        padding-left: 1rem;
+        padding-right: 1rem;
+    }
+    
+    .container {
+        padding-left: 1rem;
+        padding-right: 1rem;
+    }
+    
+    /* Asegurar que las cards se muestren en móvil */
+    .service-card,
+    .portfolio-item {
+        margin-bottom: 1rem;
+        width: 100%;
+    }
+    
+    /* Footer en móvil */
+    footer {
+        padding: 3rem 1rem 2rem 1rem;
+    }
+}
+
+/* Anti-debugging: evitar que las animaciones bloqueen contenido */
+.portfolio-item[style*="opacity: 0"],
+.service-card[style*="opacity: 0"] {
+    opacity: 1 !important;
+    transform: none !important;
+}
+
+/* Fallback para elementos ocultos por animaciones */
+@media (prefers-reduced-motion: reduce) {
+    * {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+    }
+    
+    .portfolio-item,
+    .service-card,
+    .social-link {
+        opacity: 1 !important;
+        transform: none !important;
+        visibility: visible !important;
+    }
+}
+
+/* Debugging helpers - remover en producción */
+.debug-section {
+    border: 2px solid red !important;
+    background: rgba(255, 0, 0, 0.1) !important;
+}
+
+.debug-visible {
+    outline: 3px solid green !important;
+}

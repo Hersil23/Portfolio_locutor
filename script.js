@@ -4,78 +4,167 @@ gsap.registerPlugin(ScrollTrigger);
 // Global variables
 let isMenuOpen = false;
 let typingInterval;
+let particlesCreated = false;
 
-// Particle System
+// Improved Particle System
 function createParticles() {
     const container = document.getElementById('particles-container');
-    const particleCount = window.innerWidth < 768 ? 30 : 60;
+    if (!container) return;
+    
+    // Evitar crear partículas múltiples veces
+    if (particlesCreated) return;
+    particlesCreated = true;
+    
+    const isMobile = window.innerWidth < 768;
+    const particleCount = isMobile ? 25 : 50;
     
     // Clear existing particles
     container.innerHTML = '';
     
+    // Crear diferentes tipos de partículas
     for (let i = 0; i < particleCount; i++) {
         const particle = document.createElement('div');
-        particle.className = 'particle';
-        particle.style.left = Math.random() * 100 + '%';
-        particle.style.top = Math.random() * 100 + '%';
-        particle.style.animationDelay = Math.random() * 2 + 's';
-        particle.style.animationDuration = (Math.random() * 3 + 2) + 's';
+        
+        // Determinar tipo de partícula aleatoriamente
+        const type = Math.floor(Math.random() * 3) + 1;
+        particle.className = `particle type${type}`;
+        
+        // Posición inicial aleatoria
+        const initialX = Math.random() * 100;
+        const initialY = Math.random() * 100;
+        
+        particle.style.left = initialX + '%';
+        particle.style.top = initialY + '%';
+        
+        // Delay aleatorio para las animaciones
+        particle.style.animationDelay = Math.random() * 4 + 's';
+        
         container.appendChild(particle);
         
-        // Animate particle with GSAP
+        // Animación adicional con GSAP para movimiento más complejo
+        gsap.set(particle, {
+            x: Math.random() * 100 - 50,
+            y: Math.random() * 100 - 50,
+        });
+        
+        // Animación continua
         gsap.to(particle, {
             x: Math.random() * 200 - 100,
             y: Math.random() * 200 - 100,
-            opacity: Math.random() * 0.8 + 0.2,
-            duration: Math.random() * 3 + 2,
+            duration: Math.random() * 4 + 3,
             repeat: -1,
             yoyo: true,
-            ease: "power2.inOut"
+            ease: "power1.inOut",
+            delay: Math.random() * 2
         });
     }
+    
+    console.log(`✨ ${particleCount} partículas creadas`);
 }
 
-// Mobile Menu Functionality - CORREGIDO
+// Improved Mobile Menu
 function setupMobileMenu() {
-    const mobileMenu = document.getElementById('mobile-menu');
-    const navMenu = document.getElementById('nav-menu');
-    const navLinks = document.querySelectorAll('.nav-link');
+    const toggleBtn = document.getElementById('mobile-menu-toggle');
+    const mobileNav = document.getElementById('mobile-nav');
+    const navLinks = document.querySelectorAll('#mobile-nav .nav-link');
     
-    if (!mobileMenu || !navMenu) return;
+    if (!toggleBtn || !mobileNav) {
+        console.error('❌ Elementos del menú móvil no encontrados');
+        return;
+    }
     
     // Toggle mobile menu
-    mobileMenu.addEventListener('click', function(e) {
+    toggleBtn.addEventListener('click', function(e) {
         e.stopPropagation();
         isMenuOpen = !isMenuOpen;
         
         if (isMenuOpen) {
-            navMenu.classList.add('active');
-            mobileMenu.classList.add('active');
-            document.body.style.overflow = 'hidden'; // Prevent scroll when menu is open
+            mobileNav.classList.remove('hidden');
+            toggleBtn.classList.add('open');
+            document.body.style.overflow = 'hidden';
+            
+            // Animar entrada del menú
+            gsap.fromTo(mobileNav, 
+                { opacity: 0, scale: 0.8 },
+                { opacity: 1, scale: 1, duration: 0.3, ease: "back.out(1.7)" }
+            );
+            
+            // Animar links del menú
+            gsap.fromTo(navLinks,
+                { y: 50, opacity: 0 },
+                { y: 0, opacity: 1, duration: 0.4, stagger: 0.1, ease: "power2.out", delay: 0.1 }
+            );
         } else {
-            navMenu.classList.remove('active');
-            mobileMenu.classList.remove('active');
+            // Animar salida del menú
+            gsap.to(mobileNav, {
+                opacity: 0,
+                scale: 0.8,
+                duration: 0.2,
+                ease: "power2.in",
+                onComplete: () => {
+                    mobileNav.classList.add('hidden');
+                }
+            });
+            
+            toggleBtn.classList.remove('open');
             document.body.style.overflow = 'auto';
         }
     });
     
-    // Close menu when clicking on a link (mobile)
+    // Close menu when clicking on a link
     navLinks.forEach(link => {
         link.addEventListener('click', function() {
-            if (window.innerWidth <= 768) {
-                navMenu.classList.remove('active');
-                mobileMenu.classList.remove('active');
+            if (isMenuOpen) {
+                gsap.to(mobileNav, {
+                    opacity: 0,
+                    scale: 0.8,
+                    duration: 0.2,
+                    ease: "power2.in",
+                    onComplete: () => {
+                        mobileNav.classList.add('hidden');
+                    }
+                });
+                
+                toggleBtn.classList.remove('open');
                 document.body.style.overflow = 'auto';
                 isMenuOpen = false;
             }
         });
     });
     
-    // Close menu when clicking outside (mobile)
+    // Close menu when clicking outside
     document.addEventListener('click', function(e) {
-        if (isMenuOpen && !navMenu.contains(e.target) && !mobileMenu.contains(e.target)) {
-            navMenu.classList.remove('active');
-            mobileMenu.classList.remove('active');
+        if (isMenuOpen && !mobileNav.contains(e.target) && !toggleBtn.contains(e.target)) {
+            gsap.to(mobileNav, {
+                opacity: 0,
+                scale: 0.8,
+                duration: 0.2,
+                ease: "power2.in",
+                onComplete: () => {
+                    mobileNav.classList.add('hidden');
+                }
+            });
+            
+            toggleBtn.classList.remove('open');
+            document.body.style.overflow = 'auto';
+            isMenuOpen = false;
+        }
+    });
+    
+    // Handle escape key
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape' && isMenuOpen) {
+            gsap.to(mobileNav, {
+                opacity: 0,
+                scale: 0.8,
+                duration: 0.2,
+                ease: "power2.in",
+                onComplete: () => {
+                    mobileNav.classList.add('hidden');
+                }
+            });
+            
+            toggleBtn.classList.remove('open');
             document.body.style.overflow = 'auto';
             isMenuOpen = false;
         }
@@ -83,13 +172,15 @@ function setupMobileMenu() {
     
     // Handle window resize
     window.addEventListener('resize', function() {
-        if (window.innerWidth > 768) {
-            navMenu.classList.remove('active');
-            mobileMenu.classList.remove('active');
+        if (window.innerWidth > 768 && isMenuOpen) {
+            mobileNav.classList.add('hidden');
+            toggleBtn.classList.remove('open');
             document.body.style.overflow = 'auto';
             isMenuOpen = false;
         }
     });
+    
+    console.log('📱 Menú móvil configurado');
 }
 
 // Smooth Scrolling for Navigation
@@ -101,25 +192,18 @@ function setupSmoothScroll() {
             const targetElement = document.getElementById(targetId);
             
             if (targetElement) {
-                const offsetTop = targetElement.offsetTop - 80; // Account for fixed navbar
+                const isMobile = window.innerWidth < 768;
+                const offsetTop = targetElement.offsetTop - (isMobile ? 100 : 80);
                 
                 window.scrollTo({
                     top: offsetTop,
                     behavior: 'smooth'
                 });
-                
-                // Close mobile menu if open
-                if (isMenuOpen) {
-                    const navMenu = document.getElementById('nav-menu');
-                    const mobileMenu = document.getElementById('mobile-menu');
-                    navMenu.classList.remove('active');
-                    mobileMenu.classList.remove('active');
-                    document.body.style.overflow = 'auto';
-                    isMenuOpen = false;
-                }
             }
         });
     });
+    
+    console.log('⚡ Scroll suave configurado');
 }
 
 // Typing Animation
@@ -153,6 +237,7 @@ function setupTypingAnimation() {
     }
     
     typeWriter();
+    console.log('⌨️ Animación de escritura iniciada');
 }
 
 // GSAP Animations
@@ -187,127 +272,143 @@ function setupGSAPAnimations() {
             ease: "power2.out"
         }, "-=1");
 
-    // Navbar hide/show on scroll
+    // Navbar hide/show on scroll mejorado
     let lastScrollY = window.scrollY;
+    let ticking = false;
     
-    window.addEventListener('scroll', () => {
+    function updateNavbar() {
         const currentScrollY = window.scrollY;
         const navbar = document.getElementById('navbar');
         
-        if (currentScrollY > lastScrollY && currentScrollY > 100) {
-            // Scrolling down
-            gsap.to(navbar, {duration: 0.3, y: -100, ease: "power2.out"});
-        } else {
-            // Scrolling up
-            gsap.to(navbar, {duration: 0.3, y: 0, ease: "power2.out"});
+        if (Math.abs(currentScrollY - lastScrollY) > 5) {
+            if (currentScrollY > lastScrollY && currentScrollY > 100) {
+                gsap.to(navbar, {duration: 0.3, y: -100, ease: "power2.out"});
+            } else {
+                gsap.to(navbar, {duration: 0.3, y: 0, ease: "power2.out"});
+            }
+            lastScrollY = currentScrollY;
         }
-        
-        lastScrollY = currentScrollY;
+        ticking = false;
+    }
+    
+    window.addEventListener('scroll', () => {
+        if (!ticking) {
+            requestAnimationFrame(updateNavbar);
+            ticking = true;
+        }
     });
 
-    // About Section Animations
+    // About Section Animations - Simplificadas
     ScrollTrigger.create({
         trigger: '#quien-soy',
-        start: 'top 70%',
-        end: 'bottom 30%',
+        start: 'top 80%',
+        once: true,
         onEnter: () => {
             gsap.from('.about-text', {
-                duration: 1,
-                x: -100,
+                duration: 0.8,
+                x: -50,
                 opacity: 0,
                 ease: "power2.out"
             });
             
             gsap.from('.about-skills', {
-                duration: 1,
-                x: 100,
+                duration: 0.8,
+                x: 50,
                 opacity: 0,
-                ease: "power2.out"
+                ease: "power2.out",
+                delay: 0.2
             });
         }
     });
 
-    // Skill Bars Animation
+    // Skill Bars Animation - Corregida
     gsap.utils.toArray('.skill-bar').forEach((bar, index) => {
         const widths = ['95%', '90%', '88%'];
         
         ScrollTrigger.create({
             trigger: bar,
-            start: 'top 80%',
+            start: 'top 85%',
+            once: true,
             onEnter: () => {
                 gsap.to(bar, {
                     width: widths[index],
-                    duration: 1.5,
+                    duration: 1.2,
                     ease: "power2.out",
-                    delay: index * 0.2
+                    delay: index * 0.15
                 });
             }
         });
     });
 
-    // Portfolio Items Animation
-    gsap.utils.toArray('.portfolio-item').forEach((item, index) => {
-        ScrollTrigger.create({
-            trigger: item,
-            start: 'top 80%',
-            onEnter: () => {
+    // Portfolio Items Animation - Corregida para evitar bloqueos
+    ScrollTrigger.create({
+        trigger: '#portafolio',
+        start: 'top 70%',
+        once: true,
+        onEnter: () => {
+            gsap.utils.toArray('.portfolio-item').forEach((item, index) => {
                 gsap.from(item, {
-                    duration: 0.8,
-                    y: 80,
-                    opacity: 0,
-                    delay: index * 0.2,
-                    ease: "power2.out"
-                });
-            }
-        });
-    });
-
-    // Services Cards Animation
-    gsap.utils.toArray('.service-card').forEach((card, index) => {
-        ScrollTrigger.create({
-            trigger: card,
-            start: 'top 85%',
-            onEnter: () => {
-                gsap.from(card, {
-                    duration: 0.8,
-                    y: 60,
+                    duration: 0.6,
+                    y: 50,
                     opacity: 0,
                     delay: index * 0.1,
                     ease: "power2.out"
                 });
-            }
-        });
+            });
+        }
+    });
+
+    // Services Cards Animation - Simplificada
+    ScrollTrigger.create({
+        trigger: '#servicios',
+        start: 'top 70%',
+        once: true,
+        onEnter: () => {
+            gsap.utils.toArray('.service-card').forEach((card, index) => {
+                gsap.from(card, {
+                    duration: 0.6,
+                    y: 40,
+                    opacity: 0,
+                    delay: index * 0.08,
+                    ease: "power2.out"
+                });
+            });
+        }
     });
 
     // Contact Form Animation
     ScrollTrigger.create({
         trigger: '#contacto',
-        start: 'top 70%',
+        start: 'top 75%',
+        once: true,
         onEnter: () => {
             gsap.from('.form-group', {
-                duration: 0.6,
-                y: 40,
+                duration: 0.5,
+                y: 30,
                 opacity: 0,
-                stagger: 0.1,
+                stagger: 0.08,
                 ease: "power2.out"
             });
         }
     });
 
-    // Social Links Animation
+    // Social Links Animation - Corregida
     ScrollTrigger.create({
         trigger: 'footer',
-        start: 'top 80%',
+        start: 'top 85%',
+        once: true,
         onEnter: () => {
             gsap.from('.social-link', {
-                duration: 0.6,
+                duration: 0.5,
                 scale: 0,
-                rotation: 180,
-                stagger: 0.1,
+                rotation: 90,
+                stagger: 0.08,
                 ease: "back.out(1.7)"
             });
         }
     });
+    
+    console.log('🎬 Animaciones GSAP configuradas');
 }
 
 // Service Cards Hover Effects
@@ -333,11 +434,15 @@ function setupServiceCardEffects() {
             });
         });
     });
+    
+    console.log('💳 Efectos de tarjetas configurados');
 }
 
 // Form Enhancements
 function setupFormEnhancements() {
     const form = document.querySelector('form');
+    if (!form) return;
+    
     const inputs = form.querySelectorAll('input, textarea');
     
     // Input focus effects
@@ -359,6 +464,8 @@ function setupFormEnhancements() {
         });
     });
 
+    // Form submission handling
+    form.addEventListener('submit', function(e) {
         const button = form.querySelector('button[type="submit"]');
         const originalText = button.innerHTML;
         
@@ -367,8 +474,7 @@ function setupFormEnhancements() {
         button.disabled = true;
         button.classList.add('loading');
         
-        // Note: In a real implementation, you would handle the actual form submission here
-        // For this demo, we'll simulate the process
+        // Simular envío (en producción esto se manejará con el action del form)
         setTimeout(() => {
             button.innerHTML = '<i class="fas fa-check mr-2"></i>¡Mensaje Enviado!';
             button.classList.remove('loading');
@@ -376,10 +482,11 @@ function setupFormEnhancements() {
             setTimeout(() => {
                 button.innerHTML = originalText;
                 button.disabled = false;
-                // form.reset(); // Uncomment this line in production
             }, 2000);
         }, 2000);
     });
+    
+    console.log('📋 Formulario mejorado configurado');
 }
 
 // Video Hover Effects
@@ -407,6 +514,8 @@ function setupVideoEffects() {
             });
         }
     });
+    
+    console.log('🎥 Efectos de video configurados');
 }
 
 // WhatsApp Contact Button
@@ -422,79 +531,8 @@ function setupWhatsAppButton() {
             }
         });
     });
-}
-
-// Custom Cursor Effect (Desktop only)
-function setupCustomCursor() {
-    if (window.innerWidth < 768) return; // Skip on mobile
     
-    const cursor = document.createElement('div');
-    cursor.className = 'fixed w-4 h-4 bg-blue-400 rounded-full pointer-events-none z-50 mix-blend-difference opacity-0';
-    cursor.style.transition = 'opacity 0.3s ease';
-    document.body.appendChild(cursor);
-    
-    let mouseX = 0, mouseY = 0;
-    let cursorX = 0, cursorY = 0;
-    
-    document.addEventListener('mousemove', (e) => {
-        mouseX = e.clientX;
-        mouseY = e.clientY;
-        cursor.style.opacity = '1';
-    });
-    
-    // Smooth cursor animation
-    function animateCursor() {
-        const dx = mouseX - cursorX;
-        const dy = mouseY - cursorY;
-        
-        cursorX += dx * 0.1;
-        cursorY += dy * 0.1;
-        
-        cursor.style.left = cursorX - 8 + 'px';
-        cursor.style.top = cursorY - 8 + 'px';
-        
-        requestAnimationFrame(animateCursor);
-    }
-    animateCursor();
-    
-    // Cursor hover effects
-    document.querySelectorAll('a, button, .service-card').forEach(element => {
-        element.addEventListener('mouseenter', () => {
-            gsap.to(cursor, {
-                duration: 0.2,
-                scale: 2,
-                opacity: 0.8
-            });
-        });
-        
-        element.addEventListener('mouseleave', () => {
-            gsap.to(cursor, {
-                duration: 0.2,
-                scale: 1,
-                opacity: 1
-            });
-        });
-    });
-    
-    document.addEventListener('mouseleave', () => {
-        cursor.style.opacity = '0';
-    });
-}
-
-// Parallax Effect
-function setupParallax() {
-    gsap.utils.toArray('.hero-image').forEach(element => {
-        gsap.to(element, {
-            yPercent: -30,
-            ease: "none",
-            scrollTrigger: {
-                trigger: element,
-                start: "top bottom",
-                end: "bottom top",
-                scrub: 1
-            }
-        });
-    });
+    console.log('📱 Botones de WhatsApp configurados');
 }
 
 // Performance optimizations
@@ -503,6 +541,7 @@ function optimizePerformance() {
     const videos = document.querySelectorAll('video');
     videos.forEach(video => {
         video.setAttribute('loading', 'lazy');
+        video.setAttribute('preload', 'metadata');
     });
     
     // Debounce resize events
@@ -511,20 +550,36 @@ function optimizePerformance() {
         clearTimeout(resizeTimeout);
         resizeTimeout = setTimeout(() => {
             ScrollTrigger.refresh();
-            createParticles(); // Recreate particles for new screen size
+            
+            // Recrear partículas solo si es necesario
+            const container = document.getElementById('particles-container');
+            if (container && container.children.length === 0) {
+                particlesCreated = false;
+                createParticles();
+            }
         }, 250);
     });
+    
+    // Optimizar scroll
+    let scrollTimeout;
+    window.addEventListener('scroll', () => {
+        if (scrollTimeout) return;
+        scrollTimeout = setTimeout(() => {
+            scrollTimeout = null;
+        }, 16); // ~60fps
+    }, { passive: true });
+    
+    console.log('⚡ Optimizaciones de rendimiento aplicadas');
 }
 
 // Error handling
 function handleErrors() {
     window.addEventListener('error', (e) => {
-        console.error('JavaScript Error:', e.error);
+        console.error('❌ JavaScript Error:', e.error);
     });
     
-    // Handle promise rejections
     window.addEventListener('unhandledrejection', (e) => {
-        console.error('Unhandled Promise Rejection:', e.reason);
+        console.error('❌ Unhandled Promise Rejection:', e.reason);
     });
 }
 
@@ -537,17 +592,31 @@ function setupAccessibility() {
     skipLink.className = 'sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 bg-blue-600 text-white p-2 rounded z-50';
     document.body.insertBefore(skipLink, document.body.firstChild);
     
-    // Keyboard navigation for mobile menu
+    // Improve focus management
+    const focusableElements = 'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])';
+    
     document.addEventListener('keydown', (e) => {
-        if (e.key === 'Escape' && isMenuOpen) {
-            const navMenu = document.getElementById('nav-menu');
-            const mobileMenu = document.getElementById('mobile-menu');
-            navMenu.classList.remove('active');
-            mobileMenu.classList.remove('active');
-            document.body.style.overflow = 'auto';
-            isMenuOpen = false;
+        if (e.key === 'Tab') {
+            const focusable = Array.from(document.querySelectorAll(focusableElements));
+            const index = focusable.indexOf(document.activeElement);
+            
+            if (e.shiftKey) {
+                const prevIndex = index > 0 ? index - 1 : focusable.length - 1;
+                if (prevIndex >= 0) {
+                    e.preventDefault();
+                    focusable[prevIndex].focus();
+                }
+            } else {
+                const nextIndex = index < focusable.length - 1 ? index + 1 : 0;
+                if (nextIndex < focusable.length) {
+                    e.preventDefault();
+                    focusable[nextIndex].focus();
+                }
+            }
         }
     });
+    
+    console.log('♿ Mejoras de accesibilidad aplicadas');
 }
 
 // Initialize everything when DOM is loaded
@@ -567,8 +636,6 @@ document.addEventListener('DOMContentLoaded', () => {
         setupFormEnhancements();
         setupVideoEffects();
         setupWhatsAppButton();
-        setupCustomCursor();
-        setupParallax();
         
         // Optimizations and accessibility
         optimizePerformance();
@@ -582,240 +649,114 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 });
 
-// Service worker registration (optional, for PWA features)
-if ('serviceWorker' in navigator) {
-    window.addEventListener('load', () => {
-        navigator.serviceWorker.register('/sw.js')
-            .then(registration => {
-                console.log('SW registered: ', registration);
-            })
-            .catch(registrationError => {
-                console.log('SW registration failed: ', registrationError);
-            });
-    });
-}
-        const button = form.querySelector('button[type="submit"]');
-        const originalText = button.innerHTML;
-        
-        // Add loading state
-        button.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Enviando...';
-        button.disabled = true;
-        button.classList.add('loading');
-        
-        // Note: In a real implementation, you would handle the actual form submission here
-        // For this demo, we'll simulate the process
-        setTimeout(() => {
-            button.innerHTML = '<i class="fas fa-check mr-2"></i>¡Mensaje Enviado!';
-            button.classList.remove('loading');
-            
-            setTimeout(() => {
-                button.innerHTML = originalText;
-                button.disabled = false;
-                // form.reset(); // Uncomment this line in production
-            }, 2000);
-        }, 2000);
-    });
-}
-
-// Video Hover Effects
-function setupVideoEffects() {
-    const videos = document.querySelectorAll('video');
-    
-    videos.forEach(video => {
-        const container = video.closest('.video-container');
-        
-        if (container) {
-            container.addEventListener('mouseenter', () => {
-                gsap.to(video, {
-                    duration: 0.3,
-                    scale: 1.05,
-                    ease: "power2.out"
-                });
-            });
-            
-            container.addEventListener('mouseleave', () => {
-                gsap.to(video, {
-                    duration: 0.3,
-                    scale: 1,
-                    ease: "power2.out"
-                });
-            });
-        }
-    });
-}
-
-// WhatsApp Contact Button
-function setupWhatsAppButton() {
-    const whatsappButtons = document.querySelectorAll('.pulse-button');
-    
-    whatsappButtons.forEach(button => {
-        button.addEventListener('click', (e) => {
-            if (!button.closest('form')) { // Only open WhatsApp if not in form
-                e.preventDefault();
-                const message = encodeURIComponent('Hola Herasi! Me interesa conocer más sobre tus servicios de locución.');
-                window.open(`https://wa.me/584145116337?text=${message}`, '_blank');
-            }
-        });
-    });
-}
-
-// Custom Cursor Effect (Desktop only)
-function setupCustomCursor() {
-    if (window.innerWidth < 768) return; // Skip on mobile
-    
-    const cursor = document.createElement('div');
-    cursor.className = 'fixed w-4 h-4 bg-blue-400 rounded-full pointer-events-none z-50 mix-blend-difference opacity-0';
-    cursor.style.transition = 'opacity 0.3s ease';
-    document.body.appendChild(cursor);
-    
-    let mouseX = 0, mouseY = 0;
-    let cursorX = 0, cursorY = 0;
-    
-    document.addEventListener('mousemove', (e) => {
-        mouseX = e.clientX;
-        mouseY = e.clientY;
-        cursor.style.opacity = '1';
-    });
-    
-    // Smooth cursor animation
-    function animateCursor() {
-        const dx = mouseX - cursorX;
-        const dy = mouseY - cursorY;
-        
-        cursorX += dx * 0.1;
-        cursorY += dy * 0.1;
-        
-        cursor.style.left = cursorX - 8 + 'px';
-        cursor.style.top = cursorY - 8 + 'px';
-        
-        requestAnimationFrame(animateCursor);
-    }
-    animateCursor();
-    
-    // Cursor hover effects
-    document.querySelectorAll('a, button, .service-card').forEach(element => {
-        element.addEventListener('mouseenter', () => {
-            gsap.to(cursor, {
-                duration: 0.2,
-                scale: 2,
-                opacity: 0.8
-            });
-        });
-        
-        element.addEventListener('mouseleave', () => {
-            gsap.to(cursor, {
-                duration: 0.2,
-                scale: 1,
-                opacity: 1
-            });
-        });
-    });
-    
-    document.addEventListener('mouseleave', () => {
-        cursor.style.opacity = '0';
-    });
-}
-
-// Parallax Effect
-function setupParallax() {
-    gsap.utils.toArray('.hero-image').forEach(element => {
-        gsap.to(element, {
-            yPercent: -30,
-            ease: "none",
-            scrollTrigger: {
-                trigger: element,
-                start: "top bottom",
-                end: "bottom top",
-                scrub: 1
-            }
-        });
-    });
-}
-
-// Performance optimizations
-function optimizePerformance() {
-    // Lazy load videos
-    const videos = document.querySelectorAll('video');
-    videos.forEach(video => {
-        video.setAttribute('loading', 'lazy');
-    });
-    
-    // Debounce resize events
-    let resizeTimeout;
-    window.addEventListener('resize', () => {
-        clearTimeout(resizeTimeout);
-        resizeTimeout = setTimeout(() => {
-            ScrollTrigger.refresh();
-            createParticles(); // Recreate particles for new screen size
-        }, 250);
-    });
-}
-
-// Error handling
-function handleErrors() {
-    window.addEventListener('error', (e) => {
-        console.error('JavaScript Error:', e.error);
-    });
-    
-    // Handle promise rejections
-    window.addEventListener('unhandledrejection', (e) => {
-        console.error('Unhandled Promise Rejection:', e.reason);
-    });
-}
-
-// Accessibility improvements
-function setupAccessibility() {
-    // Skip to main content link
-    const skipLink = document.createElement('a');
-    skipLink.href = '#inicio';
-    skipLink.textContent = 'Saltar al contenido principal';
-    skipLink.className = 'sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 bg-blue-600 text-white p-2 rounded z-50';
-    document.body.insertBefore(skipLink, document.body.firstChild);
-    
-    // Keyboard navigation for mobile menu
-    document.addEventListener('keydown', (e) => {
-        if (e.key === 'Escape' && isMenuOpen) {
-            const navMenu = document.getElementById('nav-menu');
-            const mobileMenu = document.getElementById('mobile-menu');
-            navMenu.classList.remove('active');
-            mobileMenu.classList.remove('active');
-            document.body.style.overflow = 'auto';
-            isMenuOpen = false;
-        }
-    });
-}
-
-// Initialize everything when DOM is loaded
-document.addEventListener('DOMContentLoaded', () => {
-    try {
-        console.log('🎙️ Inicializando Portfolio Herasi Silva...');
-        
-        // Core functionality
+// Ensure particles are created after page load
+window.addEventListener('load', () => {
+    // Double check particles are created
+    if (!particlesCreated) {
         createParticles();
-        setupMobileMenu();
-        setupSmoothScroll();
-        setupTypingAnimation();
-        setupGSAPAnimations();
-        
-        // Enhancements
-        setupServiceCardEffects();
-        setupFormEnhancements();
-        setupVideoEffects();
-        setupWhatsAppButton();
-        setupCustomCursor();
-        setupParallax();
-        
-        // Optimizations and accessibility
-        optimizePerformance();
-        handleErrors();
-        setupAccessibility();
-        
-        console.log('✅ Portfolio cargado exitosamente!');
-        
-    } catch (error) {
-        console.error('❌ Error al inicializar el portfolio:', error);
     }
 });
+
+// Intersection Observer for better performance
+function setupIntersectionObserver() {
+    const observerOptions = {
+        threshold: 0.1,
+        rootMargin: '50px'
+    };
+    
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.classList.add('in-view');
+            }
+        });
+    }, observerOptions);
+    
+    // Observe all animated elements
+    document.querySelectorAll('.portfolio-item, .service-card, .about-text, .about-skills').forEach(el => {
+        observer.observe(el);
+    });
+    
+    console.log('👁️ Intersection Observer configurado');
+}
+
+// Mobile specific optimizations
+function setupMobileOptimizations() {
+    const isMobile = window.innerWidth < 768;
+    
+    if (isMobile) {
+        // Reduce animation complexity on mobile
+        gsap.globalTimeline.timeScale(0.8);
+        
+        // Optimize touch events
+        document.addEventListener('touchstart', () => {}, { passive: true });
+        document.addEventListener('touchmove', () => {}, { passive: true });
+        
+        // Optimize scroll for mobile
+        let ticking = false;
+        function requestTick() {
+            if (!ticking) {
+                requestAnimationFrame(updateScrollElements);
+                ticking = true;
+            }
+        }
+        
+        function updateScrollElements() {
+            // Update scroll-dependent elements
+            ticking = false;
+        }
+        
+        window.addEventListener('scroll', requestTick, { passive: true });
+        
+        console.log('📱 Optimizaciones móviles aplicadas');
+    }
+}
+
+// Fix for sections not showing properly
+function fixSectionVisibility() {
+    // Ensure all sections are properly visible
+    const sections = ['#portafolio', '#servicios', '#contacto', 'footer'];
+    
+    sections.forEach(selector => {
+        const section = document.querySelector(selector);
+        if (section) {
+            // Force visibility and proper stacking
+            section.style.position = 'relative';
+            section.style.zIndex = '10';
+            section.style.visibility = 'visible';
+            section.style.opacity = '1';
+            
+            // Clear any problematic transforms
+            gsap.set(section, {clearProps: "all"});
+        }
+    });
+    
+    // Refresh ScrollTrigger after fixing sections
+    setTimeout(() => {
+        ScrollTrigger.refresh();
+    }, 100);
+    
+    console.log('🔧 Visibilidad de secciones corregida');
+}
+
+// Debug function to check what's blocking the sections
+function debugSections() {
+    const sections = ['#inicio', '#quien-soy', '#portafolio', '#servicios', '#contacto', 'footer'];
+    
+    sections.forEach(selector => {
+        const section = document.querySelector(selector);
+        if (section) {
+            const rect = section.getBoundingClientRect();
+            console.log(`${selector}:`, {
+                visible: rect.height > 0,
+                position: getComputedStyle(section).position,
+                zIndex: getComputedStyle(section).zIndex,
+                opacity: getComputedStyle(section).opacity,
+                display: getComputedStyle(section).display
+            });
+        }
+    });
+}
 
 // Service worker registration (optional, for PWA features)
 if ('serviceWorker' in navigator) {
@@ -829,75 +770,15 @@ if ('serviceWorker' in navigator) {
             });
     });
 }
-        const button = form.querySelector('button[type="submit"]');
-        const originalText = button.innerHTML;
-        
-        // Add loading state
-        button.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Enviando...';
-        button.disabled = true;
-        button.classList.add('loading');
-        
-        // Note: In a real implementation, you would handle the actual form submission here
-        // For this demo, we'll simulate the process
-        setTimeout(() => {
-            button.innerHTML = '<i class="fas fa-check mr-2"></i>¡Mensaje Enviado!';
-            button.classList.remove('loading');
-            
-            setTimeout(() => {
-                button.innerHTML = originalText;
-                button.disabled = false;
-                // form.reset(); // Uncomment this line in production
-            }, 2000);
-        }, 2000);
-    });
-}
 
-// Video Hover Effects
-function setupVideoEffects() {
-    const videos = document.querySelectorAll('video');
+// Initialize mobile optimizations and fixes
+document.addEventListener('DOMContentLoaded', () => {
+    setupIntersectionObserver();
+    setupMobileOptimizations();
+    fixSectionVisibility(); // Nueva función para corregir visibilidad
     
-    videos.forEach(video => {
-        const container = video.closest('.video-container');
-        
-        if (container) {
-            container.addEventListener('mouseenter', () => {
-                gsap.to(video, {
-                    duration: 0.3,
-                    scale: 1.05,
-                    ease: "power2.out"
-                });
-            });
-            
-            container.addEventListener('mouseleave', () => {
-                gsap.to(video, {
-                    duration: 0.3,
-                    scale: 1,
-                    ease: "power2.out"
-                });
-            });
-        }
-    });
-}
-
-// WhatsApp Contact Button
-function setupWhatsAppButton() {
-    const whatsappButtons = document.querySelectorAll('.pulse-button');
-    
-    whatsappButtons.forEach(button => {
-        button.addEventListener('click', (e) => {
-            if (!button.closest('form')) { // Only open WhatsApp if not in form
-                e.preventDefault();
-                const message = encodeURIComponent('Hola Herasi! Me interesa conocer más sobre tus servicios de locución.');
-                window.open(`https://wa.me/584145116337?text=${message}`, '_blank');
-            }
-        });
-    });
-}
-
-// Custom Cursor Effect (Desktop only)
-function setupCustomCursor() {
-    if (window.innerWidth < 768) return; // Skip on mobile
-    
-    const cursor = document.createElement('div');
-    cursor.className = 'fixed w-4 h-4 bg-blue-400 rounded-full pointer-events-none z-50 mix-blend-difference opacity-0';
-    cursor.style.transition = 'opacity 0.3s ease
+    // Debug sections if needed (remove in production)
+    setTimeout(() => {
+        debugSections();
+    }, 1000);
+});
