@@ -16,20 +16,22 @@
 
     <!-- Navigation -->
     <nav id="navbar" class="fixed top-0 w-full z-50 glass-effect transition-all duration-300">
-        <div class="container mx-auto px-6 py-4 flex justify-between items-center">
+        <div class="container mx-auto px-4 py-4 flex justify-between items-center">
             <div class="flex items-center space-x-3">
                 <div class="w-12 h-12 bg-gradient-to-r from-blue-500 to-blue-600 rounded-full flex items-center justify-center shadow-lg">
-                    <i class="fas fa-microphone text-white text-xl"></i>
+                    <img src="./resourses/logo nav hersil.png" alt="" class="w-8 h-8 object-contain">
                 </div>
                 <span class="orbitron text-xl font-bold gradient-text">HERASI</span>
             </div>
             
-            <div class="menu-toggle" id="mobile-menu">
+            <!-- Menú hamburguesa - Siempre visible en móvil -->
+            <div class="menu-toggle md:hidden" id="mobile-menu">
                 <span></span>
                 <span></span>
                 <span></span>
             </div>
             
+            <!-- Menú desktop -->
             <ul class="nav-menu hidden md:flex space-x-8" id="nav-menu">
                 <li><a href="#inicio" class="nav-link hover:text-blue-400 transition-colors duration-300 font-medium">Inicio</a></li>
                 <li><a href="#quien-soy" class="nav-link hover:text-blue-400 transition-colors duration-300 font-medium">Quién Soy</a></li>
@@ -41,26 +43,36 @@
     </nav>
 
     <!-- Hero Section -->
-    <section id="inicio" class="min-h-screen flex items-center justify-center px-6 relative">
-        <div class="container mx-auto grid md:grid-cols-2 gap-12 items-center">
-            <div class="hero-text space-y-6">
-                <h1 class="text-5xl md:text-7xl font-bold orbitron">
-                    Soy <span class="gradient-text typing-animation">Herasi Silva</span>
+    <section id="inicio" class="min-h-screen flex items-center justify-center px-4 relative">
+        <div class="container mx-auto grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-12 items-center">
+            <div class="hero-text space-y-6 text-center md:text-left">
+                <h1 class="text-3xl sm:text-4xl md:text-5xl lg:text-7xl font-bold orbitron leading-tight">
+                    Soy <span class="gradient-text typing-animation block sm:inline">Herasi Silva</span>
                 </h1>
-                <p class="text-xl md:text-2xl text-gray-300 leading-relaxed">
+                <p class="text-lg md:text-xl lg:text-2xl text-gray-300 leading-relaxed">
                     Locutor profesional certificado por la Universidad Central de Venezuela, 
                     experto en transmitir emociones y conectar genuinamente con el público.
                 </p>
-                <button class="pulse-button bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white px-10 py-4 rounded-full font-semibold text-lg hover:scale-105 transition-all duration-300 shadow-xl">
+                <button class="pulse-button bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white px-8 md:px-10 py-3 md:py-4 rounded-full font-semibold text-base md:text-lg hover:scale-105 transition-all duration-300 shadow-xl">
                     <i class="fab fa-whatsapp mr-2"></i>
                     Contáctame Ahora
                 </button>
             </div>
-            <div class="hero-image relative">
-                <div class="relative w-80 h-80 mx-auto">
-                    <div class="absolute inset-0 bg-gradient-to-r from-blue-500 via-blue-600 to-gray-700 rounded-full animate-spin-slow opacity-80"></div>
-                    <div class="absolute inset-2 bg-gray-900 rounded-full overflow-hidden border-4 border-gray-800">
-                        <div class="w-full h-full bg-gradient-to-br from-gray-800 to-black flex items-center justify-center">
+            <div class="hero-image relative order-first md:order-last">
+                <div class="relative w-64 h-64 sm:w-80 sm:h-80 mx-auto">
+                    <!-- Círculo exterior animado -->
+                    <div class="absolute inset-0 bg-gradient-to-r from-blue-500 via-blue-600 to-gray-700 rounded-full animate-spin-slow"></div>
+                    <!-- Contenedor de la imagen -->
+                    <div class="absolute inset-3 bg-gray-900 rounded-full overflow-hidden shadow-2xl">
+                        <img 
+                            src="./resources/Herasi sib fondo (1).png" 
+                            alt="Herasi Silva - Locutor Profesional" 
+                            class="w-full h-full object-cover object-top"
+                            onload="console.log('Imagen cargada correctamente')"
+                            onerror="console.error('Error al cargar la imagen'); this.style.display='none'; this.nextElementSibling.style.display='flex';"
+                        >
+                        <!-- Fallback si no carga la imagen -->
+                        <div class="w-full h-full bg-gradient-to-br from-gray-800 to-black flex items-center justify-center" style="display:none;">
                             <i class="fas fa-microphone text-6xl text-blue-400 floating-icon"></i>
                         </div>
                     </div>
