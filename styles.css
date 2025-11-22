@@ -40,6 +40,8 @@ body {
 /* Hamburger Menu Animation */
 #mobile-menu-toggle {
     transition: all 0.3s ease;
+    z-index: 51 !important;
+    position: relative;
 }
 
 #mobile-menu-toggle.open .hamburger-line:nth-child(1) {
@@ -315,8 +317,28 @@ section {
     z-index: 1000 !important;
 }
 
+/* CORRECCIÓN DEL MENÚ MÓVIL - FUERA DEL NAVBAR */
 #mobile-nav {
     z-index: 999 !important;
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    top: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+    bottom: 0 !important;
+    padding-top: 80px !important;
+    height: 100vh !important;
+}
+
+#mobile-nav a {
+    transition: all 0.3s ease;
+    padding: 10px 20px;
+    border-radius: 10px;
+}
+
+#mobile-nav a:hover {
+    background: rgba(59, 130, 246, 0.1);
+    transform: scale(1.05);
 }
 
 /* Asegurar visibilidad de todas las secciones */
@@ -336,23 +358,6 @@ footer {
     -webkit-backdrop-filter: blur(15px);
     border: 1px solid rgba(255, 255, 255, 0.1);
     box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
-}
-
-/* Mejoras para la navegación móvil */
-#mobile-nav {
-    backdrop-filter: blur(20px);
-    -webkit-backdrop-filter: blur(20px);
-}
-
-#mobile-nav a {
-    transition: all 0.3s ease;
-    padding: 10px 20px;
-    border-radius: 10px;
-}
-
-#mobile-nav a:hover {
-    background: rgba(59, 130, 246, 0.1);
-    transform: scale(1.05);
 }
 
 /* Estilos para pantallas muy pequeñas */
@@ -605,14 +610,4 @@ footer {
         transform: none !important;
         visibility: visible !important;
     }
-}
-
-/* Debugging helpers - remover en producción */
-.debug-section {
-    border: 2px solid red !important;
-    background: rgba(255, 0, 0, 0.1) !important;
-}
-
-.debug-visible {
-    outline: 3px solid green !important;
 }
