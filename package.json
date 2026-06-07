@@ -1,0 +1,24 @@
+{
+  "name": "portfolio_locutor",
+  "version": "1.0.0",
+  "description": "",
+  "main": "script.js",
+  "scripts": {
+    "build": "tailwindcss -i ./src/input.css -o ./tailwind.css --minify",
+    "dev": "tailwindcss -i ./src/input.css -o ./tailwind.css --watch"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Hersil23/Portfolio_locutor.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Hersil23/Portfolio_locutor/issues"
+  },
+  "homepage": "https://github.com/Hersil23/Portfolio_locutor#readme",
+  "devDependencies": {
+    "tailwindcss": "^3.4.17"
+  }
+}
