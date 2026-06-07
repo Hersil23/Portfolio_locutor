@@ -541,7 +541,7 @@ function optimizePerformance() {
     const videos = document.querySelectorAll('video');
     videos.forEach(video => {
         video.setAttribute('loading', 'lazy');
-        video.setAttribute('preload', 'metadata');
+        video.setAttribute('preload', 'none');
     });
     
     // Debounce resize events
