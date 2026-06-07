@@ -81,6 +81,8 @@ function setupMobileMenu() {
         if (isMenuOpen) {
             mobileNav.classList.remove('hidden');
             toggleBtn.classList.add('open');
+            toggleBtn.setAttribute('aria-expanded', 'true');
+            toggleBtn.setAttribute('aria-label', 'Cerrar menú');
             document.body.style.overflow = 'hidden';
             
             // Animar entrada del menú
@@ -107,6 +109,8 @@ function setupMobileMenu() {
             });
             
             toggleBtn.classList.remove('open');
+            toggleBtn.setAttribute('aria-expanded', 'false');
+            toggleBtn.setAttribute('aria-label', 'Abrir menú');
             document.body.style.overflow = 'auto';
         }
     });
